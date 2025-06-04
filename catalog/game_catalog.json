@@ -1,0 +1,64 @@
+{
+  "games": [
+    {
+      "name": "Elden Ring Nightreign",
+      "steam_url": "https://store.steampowered.com/app/2622380/ELDEN_RING_NIGHTREIGN/",
+      "safe_name": "elden_ring_nightreign",
+      "created_date": "2025-06-04T15:49:16.568492",
+      "status": "failed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-04T15:49:16.568492",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T15:49:41.865972",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-04T15:57:22.515727",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-04T16:19:12.491416",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T16:19:18.768847",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-04T16:19:18.785862",
+          "status": "failed"
+        },
+        {
+          "timestamp": "2025-06-04T16:27:25.801655",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T16:27:40.093295",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-04T16:27:40.115315",
+          "status": "failed"
+        }
+      ],
+      "last_updated": "2025-06-04T16:27:40.115315"
+    },
+    {
+      "name": "ELDEN RING NIGHTREIGN",
+      "steam_url": "https://store.steampowered.com/app/2622380/ELDEN_RING_NIGHTREIGN/",
+      "created_date": "2025-06-04T16:30:23.809643",
+      "status": "completed",
+      "attempts": 3,
+      "last_updated": "2025-06-04T16:46:39.907880"
+    }
+  ],
+  "stats": {
+    "total_games": 2,
+    "completed": 1
+  }
+}

@@ -1,0 +1,19 @@
+# Core video processing and AI
+moviepy==1.0.3
+captacity
+torch>=1.9.0
+torchaudio>=0.9.0
+chatterbox-tts
+
+# Media downloading and web scraping
+yt-dlp>=2023.1.6
+requests>=2.25.1
+beautifulsoup4>=4.9.3
+
+# Image processing and utilities
+Pillow>=8.2.0
+numpy>=1.21.0
+
+# Optional dependencies for enhanced functionality
+# ffmpeg-python  # Uncomment if you want direct FFmpeg bindings
+# opencv-python  # Uncomment for advanced image processing 
