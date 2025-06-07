@@ -55,10 +55,366 @@
       "status": "completed",
       "attempts": 3,
       "last_updated": "2025-06-04T16:46:39.907880"
+    },
+    {
+      "name": "Clair Obscur: Expedition 33",
+      "steam_url": "https://store.steampowered.com/app/1903340/Clair_Obscur_Expedition_33/",
+      "safe_name": "clair_obscur:_expedition_33",
+      "created_date": "2025-06-04T17:36:28.213531",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-04T17:36:28.213531",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T17:37:53.287243",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T17:38:13.359614",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-04T17:45:54.337642",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-04T17:50:14.925325",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T17:50:14.936403",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-04T17:57:43.361258",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-04T18:12:32.009541",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T18:12:32.020551",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-04T18:16:41.543046",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-04T18:16:57.107301",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T18:16:57.116308",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-04T18:18:33.409209",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-04T18:25:44.546486",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T18:25:44.557520",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-04T18:33:47.339059",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-04T19:01:25.314761",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T19:01:25.325831",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-04T19:09:18.472944",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-04T19:09:18.472944"
+    },
+    {
+      "name": "Chained Together",
+      "steam_url": "https://store.steampowered.com/app/2567870/Chained_Together/",
+      "safe_name": "chained_together",
+      "created_date": "2025-06-04T20:22:27.247091",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-04T20:22:27.247091",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-04T20:23:06.248401",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-04T20:29:22.350530",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-04T20:29:22.350530"
+    },
+    {
+      "name": "DELTARUNE",
+      "steam_url": "https://store.steampowered.com/app/1671210/DELTARUNE/",
+      "safe_name": "deltarune",
+      "created_date": "2025-06-05T12:53:49.507053",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-05T12:53:49.507053",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T12:54:05.605459",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-05T13:01:35.536347",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-05T13:01:35.536347"
+    },
+    {
+      "name": "DOOM: The Dark Ages",
+      "steam_url": "https://store.steampowered.com/app/3017860/DOOM_The_Dark_Ages/?curator_clanid",
+      "safe_name": "doom__the_dark_ages",
+      "created_date": "2025-06-05T15:10:55.658837",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-05T15:10:55.658837",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T15:11:12.734149",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-05T15:12:05.958239",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-05T15:18:08.623038",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T15:18:08.634046",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-05T15:26:16.775208",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-05T15:33:58.531771",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T15:33:58.543782",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-05T15:42:11.637370",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-05T15:49:39.963315",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T15:49:39.974327",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-05T15:57:47.149219",
+          "status": "completed"
+        },
+        {
+          "timestamp": "2025-06-05T16:07:32.204526",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T16:07:32.215535",
+          "status": "assets_ready"
+        },
+        {
+          "timestamp": "2025-06-05T16:15:51.670313",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-05T16:15:51.670313"
+    },
+    {
+      "name": "Bongo Cat",
+      "steam_url": "https://store.steampowered.com/app/3419430/Bongo_Cat/",
+      "safe_name": "bongo_cat",
+      "created_date": "2025-06-05T21:50:31.438495",
+      "status": "assets_downloaded",
+      "assets_downloaded": false,
+      "video_created": false,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-05T21:50:31.438495",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T21:50:40.172301",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-05T21:51:23.605788",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T21:51:28.699258",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-05T21:51:50.413407",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-05T21:51:52.735491",
+          "status": "assets_downloaded"
+        }
+      ],
+      "last_updated": "2025-06-05T21:51:52.735491"
+    },
+    {
+      "name": "Dune: Awakening",
+      "steam_url": "https://store.steampowered.com/app/1172710/Dune_Awakening/",
+      "safe_name": "dune__awakening",
+      "created_date": "2025-06-06T11:15:53.878244",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-06T11:15:53.878244",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-06T11:16:48.169627",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-06T11:26:49.562836",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-06T11:26:49.562836"
+    },
+    {
+      "name": "Cyber Knights Flashpoint",
+      "steam_url": "https://store.steampowered.com/app/1021210/Cyber_Knights_Flashpoint/",
+      "safe_name": "cyber_knights_flashpoint",
+      "created_date": "2025-06-06T20:37:18.434278",
+      "status": "started",
+      "assets_downloaded": false,
+      "video_created": false,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-06T20:37:18.434278",
+          "status": "started"
+        }
+      ],
+      "last_updated": "2025-06-06T20:37:18.434278"
+    },
+    {
+      "name": "Cyber Knights: Flashpoint",
+      "steam_url": "https://store.steampowered.com/app/1021210/Cyber_Knights_Flashpoint/",
+      "safe_name": "cyber_knights__flashpoint",
+      "created_date": "2025-06-06T20:39:55.257047",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-06T20:39:55.257047",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-06T20:40:17.524597",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-06T20:51:43.345737",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-06T20:51:43.345737"
+    },
+    {
+      "name": "Satisfactory",
+      "steam_url": "https://store.steampowered.com/app/526870/Satisfactory/",
+      "safe_name": "satisfactory",
+      "created_date": "2025-06-06T21:40:11.359128",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-06T21:40:11.359128",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-06T21:40:45.336629",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-06T21:51:01.845076",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-06T21:51:01.845076"
+    },
+    {
+      "name": "Delta Force",
+      "steam_url": "https://store.steampowered.com/app/2507950/Delta_Force/",
+      "safe_name": "delta_force",
+      "created_date": "2025-06-07T10:46:24.182208",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-07T10:46:24.182208",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-07T10:47:18.010561",
+          "status": "assets_downloaded"
+        },
+        {
+          "timestamp": "2025-06-07T10:55:59.263802",
+          "status": "completed"
+        }
+      ],
+      "last_updated": "2025-06-07T10:55:59.263802"
     }
   ],
   "stats": {
-    "total_games": 2,
-    "completed": 1
+    "total_games": 12,
+    "completed": 18
   }
 }

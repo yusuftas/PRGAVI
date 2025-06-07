@@ -1,0 +1,59 @@
+{
+  "games": [
+    {
+      "name": "Cyber Knights: Flashpoint",
+      "steam_url": "https://store.steampowered.com/app/1021210/Cyber_Knights_Flashpoint/",
+      "safe_name": "cyber_knights__flashpoint",
+      "created_date": "2025-06-06T21:04:11.447728",
+      "status": "started",
+      "assets_downloaded": false,
+      "video_created": false,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-06T21:04:11.447728",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-06T21:07:03.993306",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-06T21:08:47.912613",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-06T21:11:56.952417",
+          "status": "started"
+        }
+      ],
+      "video_type": "4X_no_zoom",
+      "last_updated": "2025-06-06T21:11:56.952417"
+    },
+    {
+      "name": "Cyber Knights Flashpoint",
+      "steam_url": "https://store.steampowered.com/app/1021210/Cyber_Knights_Flashpoint/",
+      "safe_name": "cyber_knights_flashpoint",
+      "created_date": "2025-06-06T21:24:14.221211",
+      "status": "completed",
+      "assets_downloaded": false,
+      "video_created": true,
+      "processing_history": [
+        {
+          "timestamp": "2025-06-06T21:24:14.221211",
+          "status": "started"
+        },
+        {
+          "timestamp": "2025-06-06T21:35:32.518325",
+          "status": "completed"
+        }
+      ],
+      "video_type": "4X_no_zoom",
+      "last_updated": "2025-06-06T21:35:32.517324"
+    }
+  ],
+  "stats": {
+    "total_games": 2,
+    "completed": 1
+  },
+  "type": "4X_strategy"
+}

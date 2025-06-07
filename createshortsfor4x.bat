@@ -2,13 +2,15 @@
 setlocal EnableDelayedExpansion
 
 :: ===============================================
-:: CREATE SHORTS WITH CONTEXT
-:: Automated batch script for shortscreator.py
+:: CREATE SHORTS FOR 4X STRATEGY GAMES
+:: Automated batch script for 4X turn-based strategy games
+:: Uses black bands instead of zoom to preserve all content
 :: ===============================================
 
 echo.
-echo 🎮 CREATE SHORTS WITH CONTEXT
+echo 🎮 CREATE SHORTS FOR 4X STRATEGY GAMES
 echo ==========================================
+echo 💡 No zoom - Full content visibility with black bands
 echo.
 
 :: Check if at least Steam URL is provided
@@ -16,11 +18,20 @@ if "%~1"=="" (
     echo ❌ Error: Steam URL is required!
     echo.
     echo 💡 Usage:
-    echo    createshortswithcontext.bat "STEAM_URL" ["SCRIPT_TEXT"]
+    echo    createshortsfor4x.bat "STEAM_URL" ["SCRIPT_TEXT"]
     echo.
     echo 📝 Examples:
-    echo    createshortswithcontext.bat "https://store.steampowered.com/app/2622380/ELDEN_RING_NIGHTREIGN/"
-    echo    createshortswithcontext.bat "https://store.steampowered.com/app/275850/No_Mans_Sky/" "Custom script here..."
+    echo    createshortsfor4x.bat "https://store.steampowered.com/app/289070/Sid_Meiers_Civilization_VI/"
+    echo    createshortsfor4x.bat "https://store.steampowered.com/app/24010/Crusader_Kings_II/" "Custom 4X script here..."
+    echo.
+    echo 🎯 Perfect for:
+    echo    • Civilization games
+    echo    • Crusader Kings series
+    echo    • Europa Universalis
+    echo    • Total War series
+    echo    • Stellaris
+    echo    • Age of Empires
+    echo    • Other 4X and grand strategy games
     echo.
     pause
     exit /b 1
@@ -67,6 +78,7 @@ if "!GAME_NAME!"=="Unknown Game" (
 )
 
 echo 🎮 Game: !GAME_NAME!
+echo 🎯 Processing for 4X Strategy (No Zoom + Black Bands)
 echo.
 
 :: Check if script is provided as second parameter
@@ -75,6 +87,12 @@ set "PROVIDED_SCRIPT=%~2"
 if "!PROVIDED_SCRIPT!"=="" (
     echo 📝 No script provided - will use interactive script creation
     echo 💡 You'll be prompted to enter a custom script or use auto-generated one
+    echo 🎯 Consider focusing on strategic elements like:
+    echo    • Empire building and expansion
+    echo    • Diplomatic relationships
+    echo    • Resource management
+    echo    • Technology research
+    echo    • Military tactics
     echo.
     set "SCRIPT_MODE=interactive"
 ) else (
@@ -93,9 +111,9 @@ if exist "venv\Scripts\activate.bat" (
     echo.
 )
 
-:: Check if shortscreator.py exists
-if not exist "shortscreator.py" (
-    echo ❌ Error: shortscreator.py not found in current directory
+:: Check if shortscreatorfor4x.py exists
+if not exist "shortscreatorfor4x.py" (
+    echo ❌ Error: shortscreatorfor4x.py not found in current directory
     echo 💡 Make sure you're running this from the Project GameVids directory
     pause
     exit /b 1
@@ -103,34 +121,40 @@ if not exist "shortscreator.py" (
 
 :: Prepare Python command
 if "!SCRIPT_MODE!"=="provided" (
-    echo 🚀 Running shortscreator with provided script...
+    echo 🚀 Running 4X shorts creator with provided script...
     echo ⚠️ Note: Custom script will be saved temporarily and processed by Python
+    echo 🎯 Processing with NO ZOOM - preserving all 4X strategy content
     echo.
     
     :: Save script to temporary file for Python to process
     echo !PROVIDED_SCRIPT! > temp_custom_script.txt
     
     :: Run Python script with custom script file
-    python shortscreator.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!" --custom-script-file "temp_custom_script.txt" --no-input
+    python shortscreatorfor4x.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!" --custom-script-file "temp_custom_script.txt" --no-input
 ) else (
-    echo 🚀 Running shortscreator with interactive script creation...
+    echo 🚀 Running 4X shorts creator with interactive script creation...
     echo 💡 You'll be prompted to enter your script or use auto-generated
+    echo 🎯 Processing with NO ZOOM - preserving all 4X strategy content
     echo.
     
     :: Run with interactive mode (default)
-    python shortscreator.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!"
+    python shortscreatorfor4x.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!"
 )
 
 :: Check if Python command was successful
 if !ERRORLEVEL! EQU 0 (
     echo.
-    echo 🎉 SUCCESS! Shorts video created successfully!
+    echo 🎉 SUCCESS! 4X Strategy shorts video created successfully!
+    echo 🎯 Video processed with NO ZOOM - all content preserved with black bands
     echo.
     echo 📁 Check the output folder for your video:
-    dir /b output\*.mp4 | findstr /i "!SAFE_NAME!" 2>nul
+    dir /b output\*4x*.mp4 2>nul
+    if errorlevel 1 (
+        dir /b output\*.mp4 | findstr /i "!SAFE_NAME!" 2>nul
+    )
     echo.
     echo 📊 View catalog:
-    python shortscreator.py --catalog
+    python shortscreatorfor4x.py --catalog
     echo.
     
     :: Ask if user wants to open output folder
@@ -140,8 +164,12 @@ if !ERRORLEVEL! EQU 0 (
     )
     
     :: Ask if user wants to view the video
-    set /p PLAY_VIDEO="▶️ Play the created video? (y/N): "
+    set /p PLAY_VIDEO="▶️ Play the created 4X video? (y/N): "
     if /i "!PLAY_VIDEO!"=="y" (
+        for %%f in (output\*4x*.mp4) do (
+            start "" "%%f"
+            goto :video_opened
+        )
         for %%f in (output\*!SAFE_NAME!*.mp4) do (
             start "" "%%f"
             goto :video_opened
@@ -151,7 +179,7 @@ if !ERRORLEVEL! EQU 0 (
     )
 ) else (
     echo.
-    echo ❌ ERROR: Shorts creation failed!
+    echo ❌ ERROR: 4X Shorts creation failed!
     echo 💡 Check the error messages above for details
 )
 
@@ -161,5 +189,6 @@ if exist "temp_game_name.txt" del temp_game_name.txt
 if exist "temp_custom_script.txt" del temp_custom_script.txt
 
 echo.
-echo 🏁 Process completed!
+echo 🏁 4X Strategy shorts processing completed!
+echo 🎯 Remember: This version preserves ALL content without zoom using black bands
 pause 

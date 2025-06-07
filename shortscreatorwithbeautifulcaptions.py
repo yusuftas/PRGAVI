@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Shorts Creator - Compact and Manageable
-Create professional short-form videos with AI narration and captions
+Shorts Creator with Beautiful Captions - Compact and Manageable
+Create professional short-form videos with AI narration and beautiful word-by-word captions
 """
 
 import os
@@ -19,6 +19,21 @@ import random
 import yt_dlp
 from bs4 import BeautifulSoup
 from datetime import datetime
+import tempfile
+import numpy as np
+
+# Fix Unicode encoding issues for Windows console
+if sys.platform == "win32":
+    import codecs
+    import locale
+    try:
+        # Try to set UTF-8 encoding for stdout
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'replace')
+        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'replace')
+    except (AttributeError, OSError):
+        # Fallback: just ignore Unicode errors
+        sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout.buffer, 'replace')
+        sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr.buffer, 'replace')
 
 # Configure logging
 logging.basicConfig(
@@ -27,6 +42,18 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger(__name__)
+
+# Add captacity modules to path
+captacity_dir = Path("captacity example")
+sys.path.insert(0, str(captacity_dir))
+
+try:
+    import segment_parser
+    import transcriber
+except ImportError:
+    logger.warning("⚠️ Captacity modules not found, will use fallback caption method")
+    segment_parser = None
+    transcriber = None
 
 def create_project_structure():
     """Create necessary directories"""
@@ -565,40 +592,281 @@ def create_video_with_moviepy(images, video_path, audio_path, output_path, video
         logger.error(f"❌ Video creation failed: {e}")
         return False
 
-def add_captions_to_video(input_video, output_video):
-    """Add captions using Captacity"""
+def create_text_image_with_word_highlight(text, width, height, current_word_index, font_size=80):
+    """Create a text image using PIL with captacity-style word highlighting"""
+    # Create transparent image
+    img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    
+    # Try to use a system font
     try:
-        import captacity
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except:
+        try:
+            font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", font_size)
+        except:
+            font = ImageFont.load_default()
+    
+    # Split text into words
+    words = text.split()
+    
+    # Calculate text layout with line breaks
+    lines = []
+    current_line = ""
+    max_chars_per_line = 30  # Limit characters per line for better readability
+    
+    for word in words:
+        test_line = current_line + (" " if current_line else "") + word
+        if len(test_line) <= max_chars_per_line:
+            current_line = test_line
+        else:
+            if current_line:
+                lines.append(current_line)
+            current_line = word
+    
+    if current_line:
+        lines.append(current_line)
+    
+    # Limit to 2 lines max (captacity style)
+    lines = lines[:1]
+    
+    # Calculate vertical positioning (center on screen)
+    line_height = font_size + 15
+    total_height = len(lines) * line_height
+    start_y = (height - total_height)  // 2 # Position near bottom like captacity
+    
+    # Track word index across lines
+    word_counter = 0
+    
+    # Draw each line
+    for i, line in enumerate(lines):
+        line_words = line.split()
+        y_pos = start_y + i * line_height
         
-        logger.info("📝 Adding beautiful captions...")
+        # Calculate starting x position for centering
+        bbox = draw.textbbox((0, 0), line, font=font)
+        line_width = bbox[2] - bbox[0]
+        start_x = (width - line_width) // 2
         
-        captacity.add_captions(
-            video_file=input_video,
-            output_file=output_video,
-            font_size=130,
-            font_color="#FFFFFF",
-            stroke_width=4,
-            stroke_color="#000000",
-            highlight_current_word=True,
-            word_highlight_color="#FFD700",
-            line_count=2,
-            padding=60,
-            shadow_strength=2.0,
-            print_info=True,
-            use_local_whisper="auto"
+        # Draw word by word with proper highlighting
+        word_x = start_x
+        for word_idx, word in enumerate(line_words):
+            # Determine colors (captacity style)
+            if word_counter == current_word_index:
+                main_color = (255, 255, 0, 255)  # Yellow for current word
+            else:
+                main_color = (255, 255, 255, 255)  # White for other words
+            
+            outline_color = (0, 0, 0, 255)  # Black outline
+            
+            # Draw shadow/outline first (multiple layers for better effect)
+            shadow_offset = 2
+            outline_width = 3
+            
+            # Draw shadow
+            for dx in range(-shadow_offset, shadow_offset + 1):
+                for dy in range(-shadow_offset, shadow_offset + 1):
+                    if dx != 0 or dy != 0:
+                        draw.text((word_x + dx, y_pos + dy), word, font=font, fill=(0, 0, 0, 180))
+            
+            # Draw black outline
+            for dx in range(-outline_width, outline_width + 1):
+                for dy in range(-outline_width, outline_width + 1):
+                    if dx != 0 or dy != 0:
+                        draw.text((word_x + dx, y_pos + dy), word, font=font, fill=outline_color)
+            
+            # Draw main text
+            draw.text((word_x, y_pos), word, font=font, fill=main_color)
+            
+            # Calculate next word position
+            word_bbox = draw.textbbox((0, 0), word + " ", font=font)
+            word_width = word_bbox[2] - word_bbox[0]
+            word_x += word_width
+            word_counter += 1
+    
+    return img
+
+def add_captions_to_video(input_video, output_video, script=None):
+    """Add beautiful captions with word-by-word highlighting using PIL"""
+    try:
+        from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip
+        
+        logger.info("📝 Adding beautiful captions with word highlighting...")
+        
+        # Extract audio for transcription
+        temp_audio_file = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
+        subprocess.run([
+            'ffmpeg', '-y', '-i', input_video, temp_audio_file
+        ], capture_output=True)
+        
+        # Load video to get dimensions and duration
+        video = VideoFileClip(input_video)
+        width, height = video.size
+        duration = video.duration
+        
+        # Try transcription or create manual segments
+        try:
+            if transcriber and segment_parser:
+                logger.info("🔄 Attempting transcription...")
+                segments = transcriber.transcribe_locally(temp_audio_file)
+                if not segments:
+                    segments = transcriber.transcribe_with_api(temp_audio_file)
+            else:
+                segments = None
+                
+        except Exception as e:
+            logger.warning(f"⚠️ Transcription failed: {e}")
+            segments = None
+        
+        # If transcription failed and we have a script, create manual segments
+        if not segments and script:
+            logger.info("📝 Creating manual transcript from script...")
+            words = script.split()
+            word_duration = duration / len(words)
+            
+            word_segments = []
+            current_time = 0.0
+            
+            for word in words:
+                word_segments.append({
+                    "word": " " + word,
+                    "start": current_time,
+                    "end": current_time + word_duration
+                })
+                current_time += word_duration
+            
+            segments = [{
+                "start": 0.0,
+                "end": duration,
+                "words": word_segments
+            }]
+        elif not segments:
+            logger.error("❌ No transcription or script available for captions")
+            return False
+        
+        # Better fit function for shorter caption segments
+        def fits_frame(text):
+            # Limit to about 6-8 words per caption for better readability
+            word_count = len(text.split())
+            char_count = len(text)
+            return word_count <= 8 and char_count <= 60
+        
+        if segment_parser:
+            captions = segment_parser.parse(segments=segments, fit_function=fits_frame)
+        else:
+            # Fallback if segment_parser is not available
+            captions = []
+            for segment in segments:
+                words = segment.get("words", [])
+                if words:
+                    # Group words into caption segments
+                    current_caption_words = []
+                    current_text = ""
+                    
+                    for word in words:
+                        word_text = word.get("word", "").strip()
+                        if len(current_text + " " + word_text) <= 60 and len(current_caption_words) < 8:
+                            current_caption_words.append(word)
+                            current_text += " " + word_text
+                        else:
+                            # Create caption from current words
+                            if current_caption_words:
+                                captions.append({
+                                    "words": current_caption_words,
+                                    "text": current_text.strip()
+                                })
+                            # Start new caption
+                            current_caption_words = [word]
+                            current_text = word_text
+                    
+                    # Add remaining words
+                    if current_caption_words:
+                        captions.append({
+                            "words": current_caption_words,
+                            "text": current_text.strip()
+                        })
+        
+        logger.info(f"✅ Created {len(captions)} caption segments")
+        
+        clips = [video]
+        
+        # Create word-by-word highlighting captions (captacity style)
+        for caption in captions:
+            words = caption["words"]
+            caption_text = caption["text"]
+            
+            logger.info(f"🔄 Processing caption: '{caption_text}' with {len(words)} words")
+            
+            # Create individual clips for each word highlight
+            for i, word in enumerate(words):
+                if i + 1 < len(words):
+                    word_end_time = words[i + 1]["start"]
+                else:
+                    word_end_time = word["end"]
+                
+                word_start_time = word["start"]
+                word_duration = word_end_time - word_start_time
+                
+                # Create text image with current word highlighted
+                text_img = create_text_image_with_word_highlight(
+                    text=caption_text,
+                    width=width,
+                    height=height,
+                    current_word_index=i,
+                    font_size=70
+                )
+                
+                # Convert PIL image to numpy array
+                text_array = np.array(text_img)
+                
+                # Create MoviePy ImageClip
+                text_clip = ImageClip(text_array, transparent=True)
+                text_clip = text_clip.set_start(word_start_time)
+                text_clip = text_clip.set_duration(word_duration)
+                text_clip = text_clip.set_position('center')
+                
+                clips.append(text_clip)
+        
+        # Create final composite video
+        logger.info("🎬 Creating composite video...")
+        
+        final_video = CompositeVideoClip(clips)
+        
+        # Write output
+        logger.info("💾 Writing video file...")
+        
+        final_video.write_videofile(
+            output_video,
+            fps=24,
+            codec='libx264',
+            audio_codec='aac',
+            temp_audiofile='temp-audio.m4a',
+            remove_temp=True
         )
         
-        logger.info("✅ Captions added successfully!")
+        # Cleanup
+        video.close()
+        final_video.close()
+        
+        # Clean up temp audio file
+        try:
+            os.unlink(temp_audio_file)
+        except:
+            pass
+        
+        logger.info("✅ Beautiful captions added successfully!")
         return True
         
     except Exception as e:
         logger.error(f"❌ Caption creation failed: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def create_shorts(game_name, steam_url=None, video_start_time=10, interactive_script=True, custom_script_file=None):
-    """Main function to create shorts video with organized structure"""
+    """Main function to create shorts video with organized structure and beautiful captions"""
     try:
-        logger.info(f"🎮 Creating shorts for {game_name}")
+        logger.info(f"🎮 Creating shorts with beautiful captions for {game_name}")
         
         # Update catalog
         update_game_catalog(game_name, steam_url, "started")
@@ -680,14 +948,14 @@ def create_shorts(game_name, steam_url=None, video_start_time=10, interactive_sc
         
         # Create video
         temp_video = Path("output") / f"{safe_name}_temp.mp4"
-        final_video = Path("output") / f"{safe_name}_shorts.mp4"
+        final_video = Path("output") / f"{safe_name}_beautiful_captions.mp4"
         
         if not create_video_with_moviepy(images, video_path, str(audio_path), str(temp_video), video_start_time):
             logger.error("❌ Failed to create video")
             return False
         
-        # Add captions
-        if add_captions_to_video(str(temp_video), str(final_video)):
+        # Add beautiful captions with script context
+        if add_captions_to_video(str(temp_video), str(final_video), script):
             temp_video.unlink()
         else:
             shutil.move(temp_video, final_video)
@@ -697,9 +965,10 @@ def create_shorts(game_name, steam_url=None, video_start_time=10, interactive_sc
         
         # Success!
         file_size = final_video.stat().st_size / (1024*1024)
-        logger.info(f"🎉 SUCCESS! Video created: {final_video}")
+        logger.info(f"🎉 SUCCESS! Video with beautiful captions created: {final_video}")
         logger.info(f"📊 File size: {file_size:.1f}MB")
         logger.info(f"⏱️ Duration: {duration:.1f} seconds")
+        logger.info(f"✨ Features: Word-by-word highlighting, professional styling, shadow effects")
         
         return True
         
@@ -732,7 +1001,7 @@ def show_catalog():
 
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser(description="Create professional shorts videos with organized structure")
+    parser = argparse.ArgumentParser(description="Create professional shorts videos with beautiful word-by-word captions")
     parser.add_argument("--game", help="Game name")
     parser.add_argument("--steam-url", help="Steam page URL")
     parser.add_argument("--video-start-time", type=int, default=10, help="Start video at second")
@@ -742,8 +1011,8 @@ def main():
     
     args = parser.parse_args()
     
-    print("🎮 ORGANIZED SHORTS CREATOR")
-    print("=" * 40)
+    print("🎮 BEAUTIFUL CAPTIONS SHORTS CREATOR")
+    print("=" * 45)
     
     # Create project structure
     create_project_structure()

@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 
 :: ===============================================
 :: CREATE SHORTS WITH CONTEXT
-:: Automated batch script for shortscreator.py
+:: Automated batch script for shortscreatorwithbeautifulcaptions.py
 :: ===============================================
 
 echo.
@@ -16,11 +16,11 @@ if "%~1"=="" (
     echo ❌ Error: Steam URL is required!
     echo.
     echo 💡 Usage:
-    echo    createshortswithcontext.bat "STEAM_URL" ["SCRIPT_TEXT"]
+    echo    createwithbeatifulcaptions.bat "STEAM_URL" ["SCRIPT_TEXT"]
     echo.
     echo 📝 Examples:
-    echo    createshortswithcontext.bat "https://store.steampowered.com/app/2622380/ELDEN_RING_NIGHTREIGN/"
-    echo    createshortswithcontext.bat "https://store.steampowered.com/app/275850/No_Mans_Sky/" "Custom script here..."
+    echo    createwithbeatifulcaptions.bat "https://store.steampowered.com/app/2622380/ELDEN_RING_NIGHTREIGN/"
+    echo    createwithbeatifulcaptions.bat "https://store.steampowered.com/app/275850/No_Mans_Sky/" "Custom script here..."
     echo.
     pause
     exit /b 1
@@ -93,9 +93,9 @@ if exist "venv\Scripts\activate.bat" (
     echo.
 )
 
-:: Check if shortscreator.py exists
-if not exist "shortscreator.py" (
-    echo ❌ Error: shortscreator.py not found in current directory
+:: Check if shortscreatorwithbeautifulcaptions.py exists
+if not exist "shortscreatorwithbeautifulcaptions.py" (
+    echo ❌ Error: shortscreatorwithbeautifulcaptions.py not found in current directory
     echo 💡 Make sure you're running this from the Project GameVids directory
     pause
     exit /b 1
@@ -103,7 +103,7 @@ if not exist "shortscreator.py" (
 
 :: Prepare Python command
 if "!SCRIPT_MODE!"=="provided" (
-    echo 🚀 Running shortscreator with provided script...
+    echo 🚀 Running shortscreatorwithbeautifulcaptions with provided script...
     echo ⚠️ Note: Custom script will be saved temporarily and processed by Python
     echo.
     
@@ -111,14 +111,14 @@ if "!SCRIPT_MODE!"=="provided" (
     echo !PROVIDED_SCRIPT! > temp_custom_script.txt
     
     :: Run Python script with custom script file
-    python shortscreator.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!" --custom-script-file "temp_custom_script.txt" --no-input
+    python shortscreatorwithbeautifulcaptions.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!" --custom-script-file "temp_custom_script.txt" --no-input
 ) else (
-    echo 🚀 Running shortscreator with interactive script creation...
+    echo 🚀 Running shortscreatorwithbeautifulcaptions with interactive script creation...
     echo 💡 You'll be prompted to enter your script or use auto-generated
     echo.
     
     :: Run with interactive mode (default)
-    python shortscreator.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!"
+    python shortscreatorwithbeautifulcaptions.py --game "!GAME_NAME!" --steam-url "!STEAM_URL!"
 )
 
 :: Check if Python command was successful
@@ -130,7 +130,7 @@ if !ERRORLEVEL! EQU 0 (
     dir /b output\*.mp4 | findstr /i "!SAFE_NAME!" 2>nul
     echo.
     echo 📊 View catalog:
-    python shortscreator.py --catalog
+    python shortscreatorwithbeautifulcaptions.py --catalog
     echo.
     
     :: Ask if user wants to open output folder
