@@ -160,6 +160,9 @@ logs/
 *.mov
 *.mkv
 
+# Game scripts (user-generated content)
+games/*/
+
 # Keep folder structure but ignore contents
 !assets/.gitkeep
 !output/.gitkeep
