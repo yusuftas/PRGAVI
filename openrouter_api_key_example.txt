@@ -1,0 +1,7 @@
+sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Instructions:
+# 1. Copy this file and rename it to 'openrouter_api_key.txt'
+# 2. Replace the example API key above with your actual OpenRouter API key
+# 3. Get your API key from: https://openrouter.ai/keys
+# 4. Keep this file secure and do not commit it to version control

@@ -12,6 +12,9 @@ import os
 from pathlib import Path
 import tempfile
 import re
+import requests
+import json
+import urllib.parse
 
 # Add lib directory to path
 sys.path.insert(0, str(Path(__file__).parent / "lib"))
@@ -320,6 +323,21 @@ class PRGAVIModernGUI:
             cursor='hand2'
         )
         load_script_button.pack(side='left', padx=5)
+        
+        generate_script_button = tk.Button(
+            utils_frame,
+            text="🤖 Generate Script",
+            font=("Segoe UI", 9),
+            bg='#fd79a8',
+            fg='white',
+            relief='flat',
+            bd=0,
+            padx=15,
+            pady=8,
+            command=self.open_script_generator,
+            cursor='hand2'
+        )
+        generate_script_button.pack(side='left', padx=5)
         
         # Progress section
         progress_frame = tk.LabelFrame(
@@ -642,6 +660,455 @@ class PRGAVIModernGUI:
         self.create_button.config(state='normal')
         self.stop_button.config(state='disabled')
         self.progress.stop()
+    
+    def open_script_generator(self):
+        """Open the script generator window"""
+        steam_url = self.url_text.get(1.0, tk.END).strip()
+        if not steam_url:
+            messagebox.showwarning("Warning", "Please enter a Steam URL first to generate a script.")
+            return
+        
+        if not validate_steam_url(steam_url):
+            messagebox.showerror("Error", "Please enter a valid Steam URL.")
+            return
+        
+        # Open script generator window
+        generator_window = ScriptGeneratorWindow(self.root, steam_url, self.update_script_from_generator)
+    
+    def update_script_from_generator(self, generated_script):
+        """Update the main window script text with generated script"""
+        self.script_text.delete(1.0, tk.END)
+        self.script_text.insert(1.0, generated_script)
+        self.log_message("✅ Script generated and loaded successfully!")
+
+class ScriptGeneratorWindow:
+    def __init__(self, parent, steam_url, callback):
+        self.parent = parent
+        self.steam_url = steam_url
+        self.callback = callback
+        self.api_key = None
+        
+        # Create window
+        self.window = tk.Toplevel(parent)
+        self.window.title("AI Script Generator")
+        self.window.geometry("600x700")
+        self.window.configure(bg='#1e1e1e')
+        self.window.transient(parent)
+        self.window.grab_set()
+        
+        # Center window
+        self.center_window()
+        
+        # Load API key
+        self.load_api_key()
+        
+        # Create interface
+        self.create_interface()
+    
+    def center_window(self):
+        """Center the window on screen"""
+        self.window.update_idletasks()
+        width = 600
+        height = 700
+        x = (self.window.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.window.winfo_screenheight() // 2) - (height // 2)
+        self.window.geometry(f'{width}x{height}+{x}+{y}')
+    
+    def load_api_key(self):
+        """Load OpenRouter API key from file"""
+        api_key_file = "openrouter_api_key.txt"
+        if os.path.exists(api_key_file):
+            try:
+                with open(api_key_file, 'r', encoding='utf-8') as f:
+                    self.api_key = f.read().strip()
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to load API key: {e}")
+        else:
+            messagebox.showwarning("API Key Missing", 
+                                 f"Please create '{api_key_file}' file with your OpenRouter API key.")
+    
+    def create_interface(self):
+        """Create the script generator interface"""
+        # Title
+        title_frame = tk.Frame(self.window, bg='#1e1e1e')
+        title_frame.pack(fill='x', padx=20, pady=15)
+        
+        title_label = tk.Label(
+            title_frame,
+            text="🤖 AI Script Generator",
+            font=("Segoe UI", 16, "bold"),
+            fg='#ffffff',
+            bg='#1e1e1e'
+        )
+        title_label.pack()
+        
+        subtitle_label = tk.Label(
+            title_frame,
+            text="Generate engaging scripts using OpenRouter AI",
+            font=("Segoe UI", 10),
+            fg='#cccccc',
+            bg='#1e1e1e'
+        )
+        subtitle_label.pack(pady=(5, 0))
+        
+        # Steam URL display
+        url_frame = tk.LabelFrame(
+            self.window,
+            text="🔗 Steam Game URL",
+            font=("Segoe UI", 11, "bold"),
+            fg='#ffffff',
+            bg='#2d2d2d',
+            relief='groove',
+            bd=2
+        )
+        url_frame.pack(fill='x', padx=20, pady=(0, 10))
+        
+        url_label = tk.Label(
+            url_frame,
+            text=self.steam_url,
+            font=("Segoe UI", 9),
+            fg='#74b9ff',
+            bg='#2d2d2d',
+            wraplength=500
+        )
+        url_label.pack(padx=10, pady=5)
+        
+        # Tone selection
+        tone_frame = tk.LabelFrame(
+            self.window,
+            text="🎭 Script Tone",
+            font=("Segoe UI", 11, "bold"),
+            fg='#ffffff',
+            bg='#2d2d2d',
+            relief='groove',
+            bd=2
+        )
+        tone_frame.pack(fill='x', padx=20, pady=(0, 10))
+        
+        self.tone_var = tk.StringVar(value="excited")
+        
+        tones = [
+            ("excited", "🔥 Excited & Energetic"),
+            ("critical", "🔍 Critical & Analytical"),
+            ("questioning", "🤔 Questioning & Curious"),
+            ("balanced", "⚖️ Balanced & Informative"),
+            ("dramatic", "🎬 Dramatic & Cinematic")
+        ]
+        
+        tone_grid = tk.Frame(tone_frame, bg='#2d2d2d')
+        tone_grid.pack(padx=10, pady=5)
+        
+        for i, (value, text) in enumerate(tones):
+            radio = tk.Radiobutton(
+                tone_grid,
+                text=text,
+                variable=self.tone_var,
+                value=value,
+                font=("Segoe UI", 9),
+                fg='#ffffff',
+                bg='#2d2d2d',
+                selectcolor='#404040',
+                activebackground='#2d2d2d',
+                activeforeground='#ffffff'
+            )
+            radio.grid(row=i//2, column=i%2, sticky='w', padx=5, pady=2)
+        
+        # System prompt
+        prompt_frame = tk.LabelFrame(
+            self.window,
+            text="📝 System Prompt (Optional)",
+            font=("Segoe UI", 11, "bold"),
+            fg='#ffffff',
+            bg='#2d2d2d',
+            relief='groove',
+            bd=2
+        )
+        prompt_frame.pack(fill='x', padx=20, pady=(0, 10))
+        
+        self.system_prompt_text = tk.Text(
+            prompt_frame,
+            height=4,
+            wrap=tk.WORD,
+            font=("Segoe UI", 9),
+            bg='#404040',
+            fg='#ffffff',
+            insertbackground='#ffffff',
+            relief='flat',
+            bd=5
+        )
+        self.system_prompt_text.pack(fill='x', padx=10, pady=10)
+        
+        # Default system prompt
+        default_prompt = "Write ONLY a 30-second YouTube Shorts script about this game. Return just the script text with no explanations, comments, or additional text."
+        self.system_prompt_text.insert(1.0, default_prompt)
+        
+        # Generation controls
+        controls_frame = tk.Frame(self.window, bg='#1e1e1e')
+        controls_frame.pack(fill='x', padx=20, pady=10)
+        
+        self.generate_button = tk.Button(
+            controls_frame,
+            text="✨ Generate Script",
+            font=("Segoe UI", 12, "bold"),
+            bg='#fd79a8',
+            fg='white',
+            relief='flat',
+            bd=0,
+            padx=20,
+            pady=12,
+            command=self.generate_script,
+            cursor='hand2'
+        )
+        self.generate_button.pack(side='left')
+        
+        self.close_button = tk.Button(
+            controls_frame,
+            text="❌ Close",
+            font=("Segoe UI", 10),
+            bg='#636e72',
+            fg='white',
+            relief='flat',
+            bd=0,
+            padx=15,
+            pady=8,
+            command=self.window.destroy,
+            cursor='hand2'
+        )
+        self.close_button.pack(side='right')
+        
+        # Generated script area
+        script_frame = tk.LabelFrame(
+            self.window,
+            text="📜 Generated Script",
+            font=("Segoe UI", 11, "bold"),
+            fg='#ffffff',
+            bg='#2d2d2d',
+            relief='groove',
+            bd=2
+        )
+        script_frame.pack(fill='both', expand=True, padx=20, pady=(0, 10))
+        
+        self.generated_script_text = scrolledtext.ScrolledText(
+            script_frame,
+            wrap=tk.WORD,
+            font=("Segoe UI", 10),
+            bg='#404040',
+            fg='#ffffff',
+            insertbackground='#ffffff',
+            relief='flat',
+            bd=5
+        )
+        self.generated_script_text.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Use script button
+        use_frame = tk.Frame(self.window, bg='#1e1e1e')
+        use_frame.pack(fill='x', padx=20, pady=(0, 15))
+        
+        self.use_script_button = tk.Button(
+            use_frame,
+            text="✅ Use This Script",
+            font=("Segoe UI", 11, "bold"),
+            bg='#00b894',
+            fg='white',
+            relief='flat',
+            bd=0,
+            padx=20,
+            pady=10,
+            command=self.use_generated_script,
+            cursor='hand2',
+            state='disabled'
+        )
+        self.use_script_button.pack()
+    
+    def generate_script(self):
+        """Generate script using OpenRouter API"""
+        if not self.api_key:
+            messagebox.showerror("Error", "OpenRouter API key not found. Please create 'openrouter_api_key.txt' file.")
+            return
+        
+        # Disable generate button
+        self.generate_button.config(state='disabled', text="🔄 Generating...")
+        self.generated_script_text.delete(1.0, tk.END)
+        self.generated_script_text.insert(1.0, "Generating script, please wait...")
+        self.use_script_button.config(state='disabled')
+        
+        # Start generation in thread
+        thread = threading.Thread(target=self.generate_script_thread, daemon=True)
+        thread.start()
+    
+    def generate_script_thread(self):
+        """Thread function for script generation"""
+        try:
+            # Get user inputs
+            tone = self.tone_var.get()
+            system_prompt = self.system_prompt_text.get(1.0, tk.END).strip()
+            
+            # Fetch Steam page info
+            self.window.after(0, lambda: self.generated_script_text.delete(1.0, tk.END))
+            self.window.after(0, lambda: self.generated_script_text.insert(1.0, "Fetching game information from Steam..."))
+            
+            game_info = self.fetch_steam_info()
+            
+            # Create tone-specific instructions
+            tone_instructions = {
+                "excited": "Write in an excited, energetic tone. Use exclamation points and enthusiastic language!",
+                "critical": "Write in a critical, analytical tone. Point out both strengths and potential weaknesses.",
+                "questioning": "Write in a questioning, curious tone. Ask rhetorical questions to engage viewers.",
+                "balanced": "Write in a balanced, informative tone. Present facts objectively.",
+                "dramatic": "Write in a dramatic, cinematic tone. Build suspense and excitement."
+            }
+            
+            # Build the prompt
+            prompt = f"""
+{system_prompt}
+
+Game Information:
+{game_info}
+
+Tone Instructions: {tone_instructions.get(tone, tone_instructions["balanced"])}
+
+CRITICAL REQUIREMENTS:
+- Write ONLY the script - no explanations, comments, or extra text
+- Maximum 30 seconds when read aloud (approximately 75-80 words)
+- Start with an immediate hook in first 3 seconds
+- End with a call to action
+- Make it punchy and engaging for YouTube Shorts
+
+Script:
+"""
+            
+            self.window.after(0, lambda: self.generated_script_text.delete(1.0, tk.END))
+            self.window.after(0, lambda: self.generated_script_text.insert(1.0, "Generating script with AI..."))
+            
+            # Make API request
+            response = self.make_openrouter_request(prompt)
+            
+            # Update UI with result
+            self.window.after(0, lambda: self.update_generated_script(response))
+            
+        except Exception as e:
+            error_msg = f"Error generating script: {str(e)}"
+            self.window.after(0, lambda: self.show_generation_error(error_msg))
+    
+    def fetch_steam_info(self):
+        """Fetch game information from Steam URL"""
+        try:
+            # Simple approach - extract game info from URL and try to get basic info
+            # This is a simplified version - in a full implementation, you might want to scrape the Steam page
+            game_name = extract_game_name_from_url(self.steam_url)
+            return f"Game: {game_name}\nSteam URL: {self.steam_url}"
+        except Exception as e:
+            return f"Game URL: {self.steam_url}\nNote: Could not fetch additional game information ({str(e)})"
+    
+    def make_openrouter_request(self, prompt):
+        """Make request to OpenRouter API"""
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "model": "meta-llama/llama-3.1-8b-instruct:free",
+            "messages": [
+                {"role": "system", "content": "You are a professional YouTube Shorts script writer. Return ONLY the script text with no additional commentary, explanations, or formatting. Keep scripts under 80 words for 30-second videos."},
+                {"role": "user", "content": prompt}
+            ],
+            "max_tokens": 150,
+            "temperature": 0.7
+        }
+        
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=data,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            script = result["choices"][0]["message"]["content"]
+            return self.post_process_script(script)
+        else:
+            raise Exception(f"API request failed: {response.status_code} - {response.text}")
+    
+    def post_process_script(self, script):
+        """Clean up the generated script"""
+        # Remove quotes at the beginning and end
+        script = script.strip()
+        if (script.startswith('"') and script.endswith('"')) or (script.startswith("'") and script.endswith("'")):
+            script = script[1:-1]
+        
+        # Remove common unwanted prefixes/suffixes
+        unwanted_prefixes = [
+            "Script:",
+            "Here's the script:",
+            "Here is the script:",
+            "The script:",
+            "YouTube Shorts Script:",
+            "**Script:**",
+            "Script: ",
+        ]
+        
+        unwanted_suffixes = [
+            "[End of script]",
+            "[Script ends]",
+            "That's the script!",
+            "Hope this helps!",
+            "[Duration: 30 seconds]",
+            "(30 seconds)",
+        ]
+        
+        # Remove prefixes
+        for prefix in unwanted_prefixes:
+            if script.lower().startswith(prefix.lower()):
+                script = script[len(prefix):].strip()
+        
+        # Remove suffixes
+        for suffix in unwanted_suffixes:
+            if script.lower().endswith(suffix.lower()):
+                script = script[:-len(suffix)].strip()
+        
+        # Remove extra quotes and asterisks
+        script = script.strip('"\'*')
+        
+        # Remove markdown formatting
+        script = re.sub(r'\*\*(.*?)\*\*', r'\1', script)  # Remove **bold**
+        script = re.sub(r'\*(.*?)\*', r'\1', script)      # Remove *italic*
+        script = re.sub(r'__(.*?)__', r'\1', script)      # Remove __bold__
+        script = re.sub(r'_(.*?)_', r'\1', script)        # Remove _italic_
+        
+        # Clean up extra whitespace
+        script = re.sub(r'\n\s*\n', '\n\n', script)       # Multiple newlines to double
+        script = re.sub(r' +', ' ', script)               # Multiple spaces to single
+        script = script.strip()
+        
+        return script
+    
+    def update_generated_script(self, script):
+        """Update the generated script text area"""
+        self.generated_script_text.delete(1.0, tk.END)
+        self.generated_script_text.insert(1.0, script)
+        self.use_script_button.config(state='normal')
+        self.generate_button.config(state='normal', text="✨ Generate Script")
+        
+        # Automatically update main window script area
+        self.callback(script)
+    
+    def show_generation_error(self, error_msg):
+        """Show error in the script area"""
+        self.generated_script_text.delete(1.0, tk.END)
+        self.generated_script_text.insert(1.0, f"❌ {error_msg}")
+        self.generate_button.config(state='normal', text="✨ Generate Script")
+        messagebox.showerror("Generation Error", error_msg)
+    
+    def use_generated_script(self):
+        """Use the generated script in the main window"""
+        script = self.generated_script_text.get(1.0, tk.END).strip()
+        if script and not script.startswith("❌"):
+            self.callback(script)
+            self.window.destroy()
+        else:
+            messagebox.showwarning("Warning", "No valid script to use.")
 
 def main():
     """Main function to run the GUI"""
