@@ -1,0 +1,47 @@
+{
+  "directories": {
+    "assets": "assets",
+    "output": "output",
+    "temp": "temp",
+    "games": "games",
+    "catalog": "catalog",
+    "fonts": "fonts"
+  },
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "preset": "faster",
+    "quality": 23
+  },
+  "tts": {
+    "model": "chatterbox",
+    "exaggeration": 0.3,
+    "cfg_weight": 0.5,
+    "temperature": 0.85,
+    "words_per_minute": 180
+  },
+  "captions": {
+    "font_size": 80,
+    "font_color": "#FFFFFF",
+    "highlight_color": "#FFD700",
+    "stroke_color": "#000000",
+    "stroke_width": 3,
+    "shadow_strength": 2.0,
+    "line_count": 1,
+    "padding": 60
+  },
+  "assets": {
+    "max_images": 15,
+    "min_file_size": 30000,
+    "image_formats": ["jpg", "jpeg", "png", "webp"],
+    "video_formats": ["mp4", "avi", "mov"]
+  },
+  "script": {
+    "max_words": 100,
+    "target_duration": 35,
+    "auto_generate": true
+  }
+}

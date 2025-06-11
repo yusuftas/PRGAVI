@@ -11,7 +11,7 @@ requests>=2.25.1
 beautifulsoup4>=4.9.3
 
 # Image processing and utilities
-Pillow>=8.2.0
+Pillow>=8.2.0,<10.0.0
 numpy>=1.21.0
 
 # Optional dependencies for enhanced functionality
