@@ -150,17 +150,23 @@ class CaptionManager:
             
             # Better fit function for shorter caption segments
             def fits_frame(text):
-                # Limit to about 6-8 words per caption for better readability
+                # Much more restrictive constraints: single line, very few words
                 word_count = len(text.split())
                 char_count = len(text)
-                return word_count <= 8 and char_count <= 60
+                
+                # Force single line layout with minimal words (1-3 words max)
+                if word_count > 4 or char_count > 30:
+                    return False
+                    
+                # Force very short segments for better readability
+                return word_count <= 3 and char_count <= 25
             
             # Parse segments into captions
             if CAPTACITY_AVAILABLE and segment_parser:
                 captions = segment_parser.parse(segments=segments, fit_function=fits_frame)
             else:
                 # Fallback if segment_parser is not available
-                captions = self._create_manual_captions(segments)
+                captions = self._create_manual_captions(segments, fits_frame)
             
             logger.info(f"[SEGMENTS] Created {len(captions)} caption segments")
             
@@ -189,7 +195,7 @@ class CaptionManager:
                         width=width,
                         height=height,
                         current_word_index=i,
-                        font_size=self.caption_settings.get("font_size", 70)
+                        font_size=self.caption_settings.get("font_size", 96)
                     )
                     
                     # Convert PIL image to numpy array
@@ -237,21 +243,32 @@ class CaptionManager:
             logger.error(traceback.format_exc())
             return False
     
-    def _create_manual_captions(self, segments: List[Dict]) -> List[Dict]:
-        """Create manual captions when segment_parser is not available"""
+    def _create_manual_captions(self, segments: List[Dict], fits_frame=None) -> List[Dict]:
+        """Create manual captions when segment_parser is not available with improved fit function"""
         captions = []
+        
+        # Default fit function if none provided
+        if fits_frame is None:
+            def fits_frame(text):
+                word_count = len(text.split())
+                char_count = len(text)
+                return word_count <= 3 and char_count <= 25
+        
         for segment in segments:
             words = segment.get("words", [])
             if words:
-                # Group words into caption segments
+                # Group words into caption segments with strict constraints
                 current_caption_words = []
                 current_text = ""
                 
                 for word in words:
                     word_text = word.get("word", "").strip()
-                    if len(current_text + " " + word_text) <= 60 and len(current_caption_words) < 8:
+                    test_text = (current_text + " " + word_text).strip()
+                    
+                    # Use the strict constraints from fits_frame
+                    if fits_frame(test_text) and len(current_caption_words) < 3:
                         current_caption_words.append(word)
-                        current_text += " " + word_text
+                        current_text = test_text
                     else:
                         # Create caption from current words
                         if current_caption_words:
@@ -295,7 +312,7 @@ class CaptionManager:
             return False
     
     def _create_caption_segments(self, script: str, duration: float) -> List[Dict]:
-        """Create caption segments from script"""
+        """Create caption segments from script with improved short segments"""
         # Clean script
         clean_script = script.replace('\n', ' ').strip()
         words = clean_script.split()
@@ -303,25 +320,39 @@ class CaptionManager:
         if not words:
             return []
         
-        # Group words into segments
-        max_words_per_segment = 4  # Good for readability
+        # Group words into very short segments (improved style)
+        max_words_per_segment = 3  # Reduced from 4 for better readability
+        max_chars_per_segment = 25  # Character limit
         segments = []
         
-        for i in range(0, len(words), max_words_per_segment):
-            segment_words = words[i:i + max_words_per_segment]
-            segment_text = " ".join(segment_words)
+        i = 0
+        while i < len(words):
+            segment_words = []
+            segment_text = ""
             
-            # Calculate timing
-            start_time = (i / len(words)) * duration
-            end_time = ((i + len(segment_words)) / len(words)) * duration
+            # Build segment with strict constraints
+            while i < len(words) and len(segment_words) < max_words_per_segment:
+                test_text = segment_text + (" " if segment_text else "") + words[i]
+                if len(test_text) <= max_chars_per_segment:
+                    segment_words.append(words[i])
+                    segment_text = test_text
+                    i += 1
+                else:
+                    break
             
-            segments.append({
-                "text": segment_text,
-                "words": segment_words,
-                "start_time": start_time,
-                "end_time": end_time,
-                "duration": end_time - start_time
-            })
+            if segment_words:
+                # Calculate timing
+                words_so_far = i - len(segment_words)
+                start_time = (words_so_far / len(words)) * duration
+                end_time = (i / len(words)) * duration
+                
+                segments.append({
+                    "text": segment_text,
+                    "words": segment_words,
+                    "start_time": start_time,
+                    "end_time": end_time,
+                    "duration": end_time - start_time
+                })
         
         return segments
     
@@ -368,13 +399,13 @@ class CaptionManager:
             return None, None
     
     def _create_text_image_with_word_highlight(self, text: str, width: int, height: int, 
-                                             current_word_index: int, font_size: int = 70) -> Image.Image:
-        """Create text image with captacity-style word highlighting"""
+                                             current_word_index: int, font_size: int = 96) -> Image.Image:
+        """Create text image with captacity-style word highlighting - improved version"""
         # Create transparent image
         img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(img)
         
-        # Try to use a system font (matching old implementation)
+        # Try to use a system font (matching improved implementation)
         try:
             font = ImageFont.truetype("arial.ttf", font_size)
         except:
@@ -386,10 +417,10 @@ class CaptionManager:
         # Split text into words
         words = text.split()
         
-        # Calculate text layout with line breaks (matching old implementation)
+        # Calculate text layout with line breaks (improved version)
         lines = []
         current_line = ""
-        max_chars_per_line = 30  # Limit characters per line for better readability
+        max_chars_per_line = 25  # Reduced from 30 for better readability
         
         for word in words:
             test_line = current_line + (" " if current_line else "") + word
@@ -403,10 +434,10 @@ class CaptionManager:
         if current_line:
             lines.append(current_line)
         
-        # Limit to 1 line max (captacity style)
+        # Limit to 1 line max (improved captacity style)
         lines = lines[:1]
         
-        # Calculate vertical positioning (bottom part of IMAGE SECTION)
+        # Calculate vertical positioning (improved positioning)
         # Video layout: 60% images at top, 40% video at bottom
         image_section_height = int(height * 0.6)  # Top 60% is for images
         line_height = font_size + 15
