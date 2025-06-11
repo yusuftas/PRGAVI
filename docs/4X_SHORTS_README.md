@@ -1,8 +1,21 @@
-# 4X Strategy Game Shorts Creator
+# 4X Strategy Game Mode - PRGAVI
 
 ## Overview
 
-The `createshortsfor4x.bat` and `shortscreatorfor4x.py` scripts are specialized versions of the original shorts creator, designed specifically for **turn-based 4X strategy games**. The key difference is that these scripts **preserve all visual content** by using black bands instead of zooming/cropping.
+The **4X Strategy Mode** (`--mode 4x`) in PRGAVI is designed specifically for **turn-based 4X strategy games**. The key difference is that this mode **preserves all visual content** by using black bands instead of zooming/cropping.
+
+## Modern Usage
+
+### GUI Interface
+```bash
+python prgavi_gui.py
+```
+Select "4X Strategy Games" mode from the radio buttons.
+
+### CLI Interface  
+```bash
+python prgavi_unified.py --game "Civilization VI" --mode 4x
+```
 
 ## Why This Version?
 

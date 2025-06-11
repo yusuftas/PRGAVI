@@ -1,21 +1,39 @@
-# Shorts Creator
+# PRGAVI - Professional Gaming Video Creator
 
-A unified tool to create professional short-form gaming videos with AI narration and captions for any Steam game.
+**Modern unified tool for creating professional short-form gaming videos with AI narration and beautiful captions.**
 
-## Features
+## 🚀 New Modern Interface
+
+PRGAVI now features a completely refactored architecture with two main entry points:
+
+### 🖥️ GUI Interface (Recommended)
+```bash
+python prgavi_gui.py
+```
+- Modern dark theme interface
+- Real-time progress tracking
+- Mode selection for different game types
+- Integrated catalog viewer
+
+### 💻 CLI Interface (Advanced)
+```bash
+python prgavi_unified.py --game "Game Name" --steam-url "URL"
+```
+
+## ✨ Features
 
 - ✅ Creates 9:16 format videos perfect for TikTok, YouTube Shorts, and Instagram Reels
 - ✅ High-quality AI narration using Chatterbox TTS
-- ✅ Automatic caption generation with word highlighting
-- ✅ Ken Burns effect for image transitions
-- ✅ Split-screen format with gameplay video at bottom
-- ✅ Optimized for gaming content
+- ✅ Beautiful captions with word-by-word highlighting (Captacity)
+- ✅ Multiple creation modes (Standard, 4X Strategy, Beautiful Captions)
+- ✅ Smart video layout with preserved aspect ratios
+- ✅ Modular architecture with `lib/` system
 - ✅ **Automatic Steam page content scraping** (screenshots, videos, description)
 
-## Prerequisites
+## 📋 Prerequisites
 
-- Python 3.8 or higher
-- ImageMagick 7.1.1-47 (required for captions)
+- Python 3.8+ 
+- Modern Windows system (primary support)
 - Internet connection (for Steam page scraping)
 
 ## Installation

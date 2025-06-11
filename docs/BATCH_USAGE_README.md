@@ -1,24 +1,37 @@
-# 🎮 CREATE SHORTS WITH CONTEXT - Batch File Usage
+# 🎮 PRGAVI - Modern Usage Guide
 
-This batch file automates the entire shorts creation process with Steam URLs and optional custom scripts.
+**Note: This guide covers the legacy batch file usage. For the modern approach, use the new GUI and CLI interfaces.**
+
+## 🚀 Modern Usage (Recommended)
+
+### GUI Interface
+```bash
+python prgavi_gui.py
+```
+- Modern dark theme interface
+- Real-time progress tracking
+- Mode selection (Standard, 4X Strategy, Beautiful Captions)
+- Integrated catalog viewer
+
+### CLI Interface
+```bash
+# Interactive mode
+python prgavi_unified.py --game "Game Name" --steam-url "STEAM_URL"
+
+# Beautiful captions mode
+python prgavi_unified.py --game "Game Name" --mode beautiful_captions
+
+# 4X strategy mode
+python prgavi_unified.py --game "Game Name" --mode 4x
+
+# Skip interactive input
+python prgavi_unified.py --game "Game Name" --no-input
+```
 
 ## 📋 Requirements
-- Windows system with PowerShell
-- Python 3.x installed
-- `shortscreator.py` in the same directory
-- All Python dependencies installed
-
-## 🚀 Usage
-
-### Basic Usage (Interactive Script)
-```batch
-createshortswithcontext.bat "STEAM_URL"
-```
-
-### With Custom Script
-```batch
-createshortswithcontext.bat "STEAM_URL" "Your custom script here"
-```
+- Windows system (primary support)
+- Python 3.8+ installed
+- All Python dependencies: `pip install -r requirements.txt`
 
 ## 📝 Examples
 
